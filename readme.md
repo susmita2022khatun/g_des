@@ -51,4 +51,4 @@ This project requires the following external files:
 ## Future Improvements
 - Add collision detection for obstacles.
 - Implement user-defined target positions via mouse click.
-- Improve kinematics solver for smoother movement.
+- Improve kinematics solver for smoother move.
