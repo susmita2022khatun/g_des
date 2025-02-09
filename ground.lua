@@ -1,18 +1,12 @@
-
 ground = class()
 
-function ground:init(x, y, width, height)
+function ground:init(x, y, radius)
     self.x = x
     self.y = y
-    self.width = width
-    self.height = height
+    self.radius = radius
 end
 
 function ground:render()
-    love.graphics.setColor(0, 255, 0, 255)
-    love.graphics.rectangle('fill', 
-                            self.x, 
-                            self.y, 
-                            self.width, 
-                            self.height)
+    love.graphics.setColor(0, 1, 0)
+    love.graphics.circle("fill", self.x, self.y, self.radius)
 end
