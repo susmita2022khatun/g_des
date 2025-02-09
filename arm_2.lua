@@ -14,6 +14,8 @@ function arm:init(Length, target, learning_rate, max_iters, tolerance, ini_theta
 
     self.theta = {ini_theta[1], ini_theta[2], ini_theta[3]}
     self.d_theta = {theta_vel[1], theta_vel[2], theta_vel[3]}
+
+    self.loss_values = {}
 end
 
 function arm:reset()
@@ -35,6 +37,13 @@ end
 
 function arm:compute_error(theta, target)
     local pos = self:forward_kinematics(theta)
+    table.insert(self.loss_values, {x = target[1] - pos[1], y = target[2] - pos[2]})
+
+    --graph potting
+    if #self.loss_values > 10 then
+        table.remove(self.loss_values, 1)
+    end
+
     return {target[1] - pos[1], target[2] - pos[2]}
 end
 
