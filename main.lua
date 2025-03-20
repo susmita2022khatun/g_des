@@ -15,6 +15,8 @@ LENGTH = {1.0, 1.0, 1.0}
 LEARNING_RATE = 0.01
 MOMENTUM = 0.9
 DECAY_RATE = 0.9
+BETA_1 = 0.9
+BETA_2 = 0.999
 MAX_ITERS = 200
 TOLERANCE = 1e-3
 THETA_VEL = {0.4, 0.4, 0.4}
@@ -28,10 +30,10 @@ SCALE = 1.0
 
 
 -- note
+
 -- for sgd momentum = 0.9
 -- lr = 0.001
 -- theta vel = 0.02 for observable changes
-
 
 -- for gd lr = 0.01
 -- theta vel = 0.2 for observable change
@@ -41,6 +43,9 @@ SCALE = 1.0
 
 -- for rmsprop lr = 0.01
 -- theta vel = 0.4 for observable chnages
+
+-- for adam lr = 0.01
+-- theta vel = 0.4 for observable changes
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -52,7 +57,7 @@ function love.load()
 
     THETA_INI = {math.pi / 4, -math.pi / 4, math.pi / 4}
 
-    arm = arm(LENGTH, TARGET, LEARNING_RATE, MOMENTUM, DECAY_RATE, MAX_ITERS, TOLERANCE, THETA_INI, THETA_VEL, CENTER_X, CENTER_Y)
+    arm = arm(LENGTH, TARGET, LEARNING_RATE, MOMENTUM, DECAY_RATE, BETA_1, BETA_2, MAX_ITERS, TOLERANCE, THETA_INI, THETA_VEL, CENTER_X, CENTER_Y)
     ground = ground(CENTER_X, CENTER_Y, RADIUS) 
     --graph = graph(ORIGIN_X, ORIGIN_Y,X_VEL, arm.loss_values, SCALE)
 

@@ -42,3 +42,29 @@ function opt:rms_propagation(theta, learning_rate, gradient, grad_scal_sum_t_min
     end
 
 end
+
+
+function opt:adam(theta, learning_rate, gradient, beta_1 , beta_2, mean_min_1, var_min_1, theta_vel, time_stamp)
+
+    local g_sum = 0
+
+    for j = 1, 3 do
+        mean_min_1[j] = beta_1 * mean_min_1[j] + (1 - beta_1) * gradient[j]
+        g_sum = g_sum + gradient[j]^2
+    end
+
+    var_min_1 = beta_2 * var_min_1 + (1 - beta_2) * g_sum
+
+    local m_bar = {0, 0, 0}
+    local v_bar = 0
+    for j =1, 3 do
+        m_bar[j] = mean_min_1[j]/(1 - beta_1^j)
+    end
+
+    v_bar = var_min_1/(1 - beta_2)
+
+    for j = 1, 3 do
+        theta[j] = theta[j] + learning_rate * m_bar[j] * theta_vel[j] * time_stamp / (math.sqrt(v_bar) + 0.00000001)
+    end
+
+end
