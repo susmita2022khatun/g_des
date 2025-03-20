@@ -1,9 +1,11 @@
 arm = class()
 
-function arm:init(Length, target, learning_rate, max_iters, tolerance, ini_theta, theta_vel, centerX, centerY)
+function arm:init(Length, target, learning_rate, momentum, decay_rate, max_iters, tolerance, ini_theta, theta_vel, centerX, centerY)
     self.Length = Length
     self.initial_theta = ini_theta
     self.learning_rate = learning_rate
+    self.momentum = momentum
+    self.decay_rate = decay_rate
     self.max_iters = max_iters
     self.tolerance = tolerance
     self.target = target
@@ -74,6 +76,9 @@ function arm:compute_jacobian(theta)
 end
 
 function arm:update(dt)
+    local grad_t_min_1 = { 0, 0, 0 }
+    local grad_scal_sum = 0
+    local grad_scal_sum_t_min_1 = 0
     for i = 1, self.max_iters do
         local error = self:compute_error(self.theta, self.target)
         local error_magnitude = math.sqrt(error[1]^2 + error[2]^2)
@@ -89,11 +94,19 @@ function arm:update(dt)
             J[1][2] * error[1] + J[2][2] * error[2],
             J[1][3] * error[1] + J[2][3] * error[2]
         }
+
+        for j = 1, 3 do
+            grad_scal_sum = grad_scal_sum + gradient[j]^2
+        end
         
-        -- for j = 1, 3 do
-        --     self.theta[j] = self.theta[j] + self.learning_rate * gradient[j] * dt * self.theta_vel[j]
-        -- end
-        opt:gradient_descent(self.theta, self.learning_rate, gradient, self.theta_vel, dt)
+        -- opt:grad_desc_momentum(self.theta, self.learning_rate, self.momentum, gradient, grad_t_min_1, self.theta_vel, dt)
+        -- opt:gradient_descent(self.theta, self.learning_rate, gradient, self.theta_vel, dt)
+        -- opt: adaptive_grad(self.theta, self.learning_rate, gradient, grad_scal_sum, self.theta_vel, dt)
+        opt:rms_propagation(self.theta, self.learning_rate, gradient, grad_scal_sum_t_min_1, self.decay_rate, self.theta_vel, dt)
+
+        for j = 1, 3 do
+            grad_t_min_1[j] = gradient[j]
+        end
 
     end
 end
