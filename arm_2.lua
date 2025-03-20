@@ -90,9 +90,11 @@ function arm:update(dt)
             J[1][3] * error[1] + J[2][3] * error[2]
         }
         
-        for j = 1, 3 do
-            self.theta[j] = self.theta[j] + self.learning_rate * gradient[j] * dt * self.theta_vel[j]
-        end
+        -- for j = 1, 3 do
+        --     self.theta[j] = self.theta[j] + self.learning_rate * gradient[j] * dt * self.theta_vel[j]
+        -- end
+        opt:gradient_descent(self.theta, self.learning_rate, gradient, self.theta_vel, dt)
+
     end
 end
 
