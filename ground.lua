@@ -8,5 +8,7 @@ end
 
 function ground:render()
     love.graphics.setColor(0, 1, 0)
-    love.graphics.circle("fill", self.x, self.y, self.radius)
+    for j = 1, 5 do
+        love.graphics.circle("fill", self.x[j], self.y, self.radius)
+    end
 end

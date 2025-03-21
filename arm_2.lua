@@ -1,6 +1,6 @@
 arm = class()
 
-function arm:init(Length, target, learning_rate, momentum, decay_rate, beta_1, beta_2, max_iters, tolerance, ini_theta, theta_vel, centerX, centerY)
+function arm:init(Length, target, learning_rate, momentum, decay_rate, beta_1, beta_2, max_iters, tolerance, ini_theta, theta_vel, centerX, centerY, opt_tag)
     self.Length = Length
     self.initial_theta = ini_theta
     self.learning_rate = learning_rate
@@ -12,6 +12,7 @@ function arm:init(Length, target, learning_rate, momentum, decay_rate, beta_1, b
     self.tolerance = tolerance
     self.target = target
     self.theta_vel = theta_vel
+    self.opt_tag = opt_tag
 
     self.cx = centerX
     self.cy = centerY
@@ -102,12 +103,20 @@ function arm:update(dt)
         for j = 1, 3 do
             grad_scal_sum = grad_scal_sum + gradient[j]^2
         end
+
+
+        if self.opt_tag == 'sgd' then
+            opt:grad_desc_momentum(self.theta, self.learning_rate, self.momentum, gradient, grad_t_min_1, self.theta_vel, dt)
+        elseif self.opt_tag == 'gd' then
+            opt:gradient_descent(self.theta, self.learning_rate, gradient, self.theta_vel, dt)
+        elseif self.opt_tag == 'adagrad' then
+            opt: adaptive_grad(self.theta, self.learning_rate, gradient, grad_scal_sum, self.theta_vel, dt)
+        elseif self.opt_tag == 'rmsprop' then
+            opt:rms_propagation(self.theta, self.learning_rate, gradient, grad_scal_sum_t_min_1, self.decay_rate, self.theta_vel, dt)
+        elseif self.opt_tag == 'adam' then
+            opt: adam(self.theta, self.learning_rate, gradient, self.beta_1, self.beta_2, mean_min_1, var_min_1, self.theta_vel, dt)
+        end
         
-        -- opt:grad_desc_momentum(self.theta, self.learning_rate, self.momentum, gradient, grad_t_min_1, self.theta_vel, dt)
-        -- opt:gradient_descent(self.theta, self.learning_rate, gradient, self.theta_vel, dt)
-        -- opt: adaptive_grad(self.theta, self.learning_rate, gradient, grad_scal_sum, self.theta_vel, dt)
-        -- opt:rms_propagation(self.theta, self.learning_rate, gradient, grad_scal_sum_t_min_1, self.decay_rate, self.theta_vel, dt)
-        opt: adam(self.theta, self.learning_rate, gradient, self.beta_1, self.beta_2, mean_min_1, var_min_1, self.theta_vel, dt)
         for j = 1, 3 do
             grad_t_min_1[j] = gradient[j]
         end
@@ -144,5 +153,7 @@ function arm:render()
     love.graphics.circle("fill", centerX + joint1[1] * scale, centerY - joint1[2] * scale, 7)
     love.graphics.circle("fill", centerX + joint2[1] * scale, centerY - joint2[2] * scale, 7)
     love.graphics.circle("fill", centerX + joint3[1] * scale, centerY - joint3[2] * scale, 7)
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.print("opt: "..self.opt_tag , self.cx, self.cy + 100)
 end
 
